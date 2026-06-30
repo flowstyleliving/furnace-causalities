@@ -34,7 +34,7 @@ Rules:
 
 ### 2026-06-30 — Furnace guard runs Qwen locally
 
-The operator-facing Furnace guard now runs Qwen2.5-7B 4-bit entirely on an Apple-silicon Mac mini through MLX. Before any response text is generated, it measures the model's calibrated prompt-time attention signal and returns one of four fail-closed states: allow, block, abstain, or defer; the wrapper only launches the downstream agent on allow. A replay of a sealed calibration example reproduced the original score exactly, and all 14 command-line safety regression tests pass. The current profile monitors ANLI-style hallucination and commitment behavior, not general harmful prompts; domain-specific safety calibration and a persistent warm model process remain the next product steps.
+The operator-facing Furnace guard now runs Qwen2.5-7B 4-bit entirely on an Apple-silicon Mac mini through MLX. Its terminal interface keeps the selected model resident, measures each prompt before generation, displays the guard state and a separately labeled first-token confidence diagnostic, and only then permits or suppresses the response; first-run setup, cached-model selection, Monitor/Strict policies, and local labeled-data calibration are built in. A replay of a sealed calibration example reproduced the original score exactly, a real `Hi` chat completed through the metric-first flow, and all 14 command-line safety regression tests pass. The bundled profile monitors ANLI-style hallucination and commitment behavior, not general harmful prompts; automatic chat-domain blocking still requires a dedicated calibration.
 
 ### 2026-06-23 — Models disagree at a fixed rate no matter the family or scale
 

@@ -28,9 +28,19 @@ Rules:
 
 ---
 
-## 2026 — PRI era
+## 2026 — Morphology era (ACE, RPV, Depth Curves)
 
-> _Entries dated 2026-01-16 through 2026-02-18 below are the **tail of the SUP saga** (carried in the `anthropic-ai-safety` repo) and the moment of methodological split into the PRI track. Marked inline with `[SUP saga]` for clarity. PRI era proper begins at the 2026-01-22 PRI v1 paper and the 2026-03-02 `PRI_at_commitment` repo._
+> _PRI (v1–v3) sealed and moved to archive-only status around the 2026-05-13 calibrator schema fix (see the PRI era section below). Everything from here forward measures the shape of internal activations at the moment a model commits to an answer — attention geometry (ACE), a confidence-independent volume signal (RPV), and how that signal changes with network depth (Depth Curves) — rather than the token-surprise-plus-rupture score PRI used._
+
+### 2026-09-02 — Outside guidance, and the zero-compute turn
+
+Guidance from a researcher outside the project reframed how this work should be positioned: develop taste alongside skill, connect each result to the broader goals of the field rather than presenting it standalone, frame projects within the interests of funders or join ones already funded, and deliberately pursue research avenues that need no compute. The last point had already been demonstrated without being named as a strategy. The two analyses that closed in the preceding three days — testing whether three attention instruments measure one variable, and whether aiming one instrument at a model's own peak layer beats pinning several at fixed layers — ran entirely on data banked from earlier runs, cost nothing, and produced two findings plus two retractions of the project's own earlier claims. That matters here because compute is the binding constraint: one study is parked behind funding and a 405-billion-parameter extraction sits stopped mid-flight on the remaining credit. The open question is social rather than technical — increasing contact with the field at a steady pace, without over-managing how that reads.
+
+### 2026-08-31 — Where the detection line actually sits, named
+
+A literature pass across the papers this project's detection line has been checked against turned up a consistent shape: every nearby method matches on one property and misses another, and none matches on all three at once. HARP is unsupervised and geometric, but it uses one fixed subspace of the model's output-projection matrix, computed once and never reshaped per token. RAUQ runs in a single forward pass with no training loop, but its signal comes from attention heads chosen by a supervised correlation step, not from residual-stream geometry. The strategic-deception and oversight-scaling probes from three independent groups (Apollo Research, a Renmin University/CAS team, and a FAR.AI team including one of the authors of this project's own logit-lens comparator) all read the model's internal state at or near the same moment this project measures — right before it commits to an answer — but each of them is a supervised linear probe that needs freshly labeled examples for every new deployment.
+
+No paper surveyed combines all three properties: unsupervised, reweighted per generated token by the model's own predictive uncertainty, and measured at the commitment step itself. That combination is not a new result — it is what this project's core metric already does. What changed today is recognizing it as a genuine gap between five independent external lines, each of which found one adjacent piece and stopped there.
 
 ### 2026-08-17 — The depth regularities face six strangers
 
@@ -112,6 +122,10 @@ The pre-registered v4 sealed run — frozen spec, t=0 prefill-last-position atte
 
 ### 2026-05-18 — t=0 recoverability audit confirms the literal panel, lands on main
 A read-only post-hoc sensitivity audit answered the step-0 panel's open question — *did scoring only the literal "YES"/"NO" tokens undercount models that answer with synonyms like "Correct" or "False"?* — with a clear no. Re-running the forward pass on the same frozen 200-prompt × 10-model slice behind a byte-faithful integrity gate (it recomputes every locked p_yes/p_no/lean plus the frozen 3-sample canary top-10 and aborts on any drift; max |Δ| = exactly 0.0 on all 10 models), the frozen synonym shortlist adds ≤1e-5 probability mass and never flips a single model's eligibility or top-1 token. The high non-literal-top-1 rates turn out to be continuation scaffolding (" To", "\n") with literal YES/NO mass surviving above the noise floor underneath, not disguised answers — so the locked verdict is tightened, not weakened; the one narrow caveat is Mistral-7B's bare-letter "Y" onset (107/200), which sits outside both buckets and points to a future single-letter Y/N probe rather than more synonyms. Greptile passed it 5/5, the full pytest suite is 185 green, and it merged to main as fdc61f3.
+
+## 2026 — PRI era
+
+> _Entries dated 2026-01-16 through 2026-02-18 below are the **tail of the SUP saga** (carried in the `anthropic-ai-safety` repo) and the moment of methodological split into the PRI track. Marked inline with `[SUP saga]` for clarity. PRI era proper begins at the 2026-01-22 PRI v1 paper and the 2026-03-02 `PRI_at_commitment` repo, and runs through the 2026-05-13 calibrator schema fix below, after which the project's active line moved to the morphology era above (ACE / RPV / Depth Curves)._
 
 ### 2026-05-17 — t=0 belief-readout re-grounds the commit-step premise
 The step-0 belief-readout panel established a valid, strongly-discriminative place to measure a model's answer "belief": the next-token logit at t=0 (the last prompt position, before any text is generated). Across 10 models on 200 balanced ANLI contradiction prompts, 9/10 are Recoverable-for-M — literal off-top-1 YES/NO probability mass sits above a frozen, data-independent noise floor (Qwen2.5 strongest at AUROC 0.926 @ 0.98 coverage; the Mistral-Nemo free-generation anchor agrees 0.99 and passed). The lone exception, Phi-3.5-mini, clears the floor on only 37/200 samples — a genuine low-decidedness null, and a tension worth tracking since it is one of Step 1's "clean" models. This re-grounds the commit-step measurement premise but, by pre-registration, does not retroactively validate the earlier gen_step=1 attention numbers — those still need re-measurement at this logit-defined locus.
